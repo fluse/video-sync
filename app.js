@@ -19,26 +19,16 @@ var video = youtubedl(url, ['--format=18'], {
 
 path = path + '/';
 
-video.pipe(fs.createWriteStream(videoId + '.mp4'));
+video.pipe(fs.createWriteStream(path + videoId + '.mp4'));
 
 video.on('end', getWave);
-
-function getAudio () {
-    new ffmpeg(path + videoId + '.mp4', function (err, video) {
-        if (!err) {
-            console.log(video);
-            console.log('The video is ready to be processed');
-            video.fnExtractSoundToMP3(path + videoId + '.mp3', getWave);
-        } else {
-            console.log('Error: ' + err);
-        }
-    });
-}
 
 function getWave (err, video) {
     if (err) {
         return console.log(err);
     }
+
+    console.log('downloaded');
 
     waveform(path + videoId + '.mp4', {
       // options
@@ -65,6 +55,6 @@ function getWave (err, video) {
       'png-color-outer': '000000ff',  // gradient outer color, rrggbbaa
     }, function(err, buf) {
       // done
-      console.log(err);
+      console.log('done');
     });
 }
