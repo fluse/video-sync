@@ -6,27 +6,29 @@ var waveform = require('waveform');
 var url = 'https://www.youtube.com/watch?v=';
 // 'iCmHG46gY9k'
 var videoId = process.argv.slice(2)[0];
-
+path = __dirname + '/downloads';
 url = url + videoId;
 
 var video = youtubedl(url, ['--format=18'], {
-    cwd: __dirname
+    cwd: path
 }).on('info', function(info) {
   console.log('Download started');
   console.log('filename: ' + info._filename);
   console.log('size: ' + info.size);
 });
 
+path = path + '/';
+
 video.pipe(fs.createWriteStream(videoId + '.mp4'));
 
 video.on('end', getWave);
 
 function getAudio () {
-    new ffmpeg(__dirname + '/' + videoId + '.mp4', function (err, video) {
+    new ffmpeg(path + videoId + '.mp4', function (err, video) {
         if (!err) {
             console.log(video);
             console.log('The video is ready to be processed');
-            video.fnExtractSoundToMP3(__dirname + '/' + videoId + '.mp3', getWave);
+            video.fnExtractSoundToMP3(path + videoId + '.mp3', getWave);
         } else {
             console.log('Error: ' + err);
         }
@@ -38,24 +40,24 @@ function getWave (err, video) {
         return console.log(err);
     }
 
-    waveform(__dirname + '/' + videoId + '.mp4', {
+    waveform(path + videoId + '.mp4', {
       // options
       'scan': false,                  // whether to do a pass to detect duration
 
       // transcoding options
-      transcode: videoId + ".mp3",    // path to output-file, or - for stdout as a Buffer
+      transcode: path + videoId + ".mp3",    // path to output-file, or - for stdout as a Buffer
       bitrate: 320,                   // audio bitrate in kbps
       format: "mp3",                 // e.g. mp3, ogg, mp4
       codec: "mp3",                  // e.g. mp3, vorbis, flac, aac
       mime: "mimetype",               // e.g. audio/vorbis
       // waveform.js options
-      waveformjs: videoId + ".json",  // path to output-file, or - for stdout as a Buffer
+      waveformjs: path + videoId + ".json",  // path to output-file, or - for stdout as a Buffer
       'wjs-width': 800,               // width in samples
       'wjs-precision': 4,             // how many digits of precision
       'wjs-plain': false,             // exclude metadata in output JSON (default off)
 
       // png options
-      png: videoId + ".png",          // path to output-file, or - for stdout as a Buffer
+      png: path + videoId + ".png",          // path to output-file, or - for stdout as a Buffer
       'png-width': 500,               // width of the image
       'png-height': 120,               // height of the image
       'png-color-bg': '00000000',     // bg color, rrggbbaa
